@@ -32,9 +32,9 @@ public class RoomMapper {
                 room.getName(),
                 room.getInviteCode(),
                 room.getHunterRooms().stream()
-                        // The stream now maps each HunterRoom link to a HunterRoomSimpleDTO
                         .map(HunterMapper::toHunterRoomSimpleDTO)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                room.getTasks().stream().map(TaskMapper :: toDTO).collect(Collectors.toList())
         );
     }
 }

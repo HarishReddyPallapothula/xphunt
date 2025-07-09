@@ -1,18 +1,21 @@
 package studio.contrarian.xphunt.app.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomDTO {
     private Long id;
     private String name;
     private String inviteCode;
-    private List<HunterRoomSimpleDTO> hunters;
+    private List<HunterRoomSimpleDTO> hunters = new ArrayList<>();
+    private List<TaskDTO> tasks = new ArrayList<>();
 
-    public RoomDTO(Long id, String name, String inviteCode, List<HunterRoomSimpleDTO> hunters) {
+    public RoomDTO(Long id, String name, String inviteCode, List<HunterRoomSimpleDTO> hunters, List<TaskDTO> tasks) {
         this.id = id;
         this.name = name;
         this.inviteCode = inviteCode;
         this.hunters = hunters;
+        this.tasks = tasks;
     }
 
     public Long getId() {
@@ -45,5 +48,13 @@ public class RoomDTO {
 
     public void setHunters(List<HunterRoomSimpleDTO> hunters) {
         this.hunters = hunters;
+    }
+
+    public List<TaskDTO> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskDTO> tasks) {
+        this.tasks = tasks;
     }
 }
