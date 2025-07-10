@@ -20,16 +20,19 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final HunterRepository hunterRepository;
     private final HunterRoomRepository hunterRoomRepository;
+    private final PermissionService permissionService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, HunterRepository hunterRepository, HunterRoomRepository hunterRoomRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, HunterRepository hunterRepository, HunterRoomRepository hunterRoomRepository, PermissionService permissionService) {
         this.taskRepository = taskRepository;
         this.hunterRepository = hunterRepository;
         this.hunterRoomRepository = hunterRoomRepository;
+        this.permissionService = permissionService;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TaskDTO getTaskById(Long taskId) {
+    public TaskDTO getTaskById(Long taskId, Long hunterId) {
+        permissionService.verifyHunterCanAccessTask(hunterId,taskId);
         Task task = taskRepository.findById(taskId)
             .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
         return TaskMapper.toDTO(task);
@@ -38,6 +41,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskDTO claimTask(Long taskId, Long hunterId) {
+
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
 
@@ -74,12 +78,12 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
             .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
         
-        if (task.isCompleted()) throw new IllegalStateException("Task is already completed.");
+        if (task.getStatus().equals(TaskStatusType.COMPLETED)) throw new IllegalStateException("Task is already completed.");
         if (task.getClaimedBy() == null || !task.getClaimedBy().getId().equals(hunterId)) {
             throw new IllegalStateException("Task must be claimed by you to be completed.");
         }
         
-        task.setCompleted(true);
+        task.setStatus(TaskStatusType.COMPLETED);
         
         Hunter completer = task.getClaimedBy();
         HunterRoom hunterRoom = hunterRoomRepository.findByRoomIdAndHunterId(task.getRoom().getId(), hunterId)
@@ -98,21 +102,15 @@ public class TaskServiceImpl implements TaskService {
             .notes("Task completed. " + task.getXp() + " XP awarded.")
             .build();
         task.getEvents().add(event);
-        
         return TaskMapper.toDTO(taskRepository.save(task));
     }
 
     @Override
     @Transactional
     public void deleteTask(Long taskId, Long hunterId) {
+        permissionService.verifyHunterIsTaskCreator(taskId, hunterId);
         Task task = taskRepository.findById(taskId)
             .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
-        
-        // Permission check: Only the person who created the task can delete it.
-        if (!task.getCreatedBy().getId().equals(hunterId)) {
-            throw new IllegalStateException("You do not have permission to delete this task.");
-        }
-
         taskRepository.delete(task);
     }
 }

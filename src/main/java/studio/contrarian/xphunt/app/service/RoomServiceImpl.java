@@ -29,12 +29,14 @@ public class RoomServiceImpl implements RoomService {
     private final HunterRepository hunterRepository;
     private final TaskRepository taskRepository;
     private final HunterRoomRepository hunterRoomRepository;
+    private final PermissionService permissionService;
 
-    public RoomServiceImpl(RoomRepository roomRepository, HunterRepository hunterRepository, TaskRepository taskRepository, HunterRoomRepository hunterRoomRepository) {
+    public RoomServiceImpl(RoomRepository roomRepository, HunterRepository hunterRepository, TaskRepository taskRepository, HunterRoomRepository hunterRoomRepository, PermissionService permissionService) {
         this.roomRepository = roomRepository;
         this.hunterRepository = hunterRepository;
         this.taskRepository = taskRepository;
         this.hunterRoomRepository = hunterRoomRepository;
+        this.permissionService = permissionService;
     }
 
 
@@ -42,6 +44,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomDTO createRoom(CreateRoomRequest request, Long creatorId) {
+
         Hunter creator = hunterRepository.findById(creatorId)
                 .orElseThrow(() -> new EntityNotFoundException("Hunter not found with id: " + creatorId));
 
@@ -59,6 +62,7 @@ public class RoomServiceImpl implements RoomService {
         Room savedRoom = roomRepository.save(room);
         return RoomMapper.toDTO(savedRoom);
     }
+
 
     @Override
     @Transactional
@@ -86,6 +90,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public TaskDTO addTaskToRoom(Long roomId, CreateTaskRequest request, Long creatorId) {
+        permissionService.verifyHunterIsMemberOfRoom(roomId, creatorId);
+
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + roomId));
 
@@ -121,10 +127,11 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public TaskDTO claimTask(Long roomId, Long taskId, Long hunterId) {
+        permissionService.verifyHunterCanAccessTask(taskId, hunterId);
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
 
-        // Basic validation
+
         if (!task.getRoom().getId().equals(roomId)) {
             throw new IllegalArgumentException("Task does not belong to the specified room.");
         }
@@ -166,7 +173,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<HunterRoomSimpleDTO> getRoomLeaderboard(Long roomId) {
+    public List<HunterRoomSimpleDTO> getRoomLeaderboard(Long roomId, Long hunterId) {
+        permissionService.verifyHunterIsMemberOfRoom(roomId, hunterId);
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room not found with id: " + roomId);
         }
@@ -178,7 +186,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
-    public RoomDTO getRoomById(Long roomId) {
+    public RoomDTO getRoomById(Long roomId, Long hunterId) {
+
+        permissionService.verifyHunterIsMemberOfRoom(hunterId, roomId);
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + roomId));
         return RoomMapper.toDTO(room);

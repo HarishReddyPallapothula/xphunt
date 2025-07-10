@@ -32,7 +32,6 @@ public class HunterMapper {
                 hunter.getName(),
                 hunter.getTotalXp(),
                 hunter.getHunterRooms().stream()
-                        // The stream now maps each HunterRoom link to a RoomMembershipDTO
                         .map(RoomMapper::toRoomMembershipDTO)
                         .collect(Collectors.toList()),
                 hunter.getClaimedTasks().stream()

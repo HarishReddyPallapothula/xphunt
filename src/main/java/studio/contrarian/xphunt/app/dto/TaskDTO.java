@@ -1,17 +1,20 @@
 package studio.contrarian.xphunt.app.dto;
 
+import studio.contrarian.xphunt.app.model.TaskStatusType;
+
 import java.util.List;
 
 public class TaskDTO {
     private Long id;
     private String description;
     private int xp;
+    private TaskStatusType status;
     private RoomSimpleDTO room;
     private HunterSimpleDTO claimedBy;
     private HunterSimpleDTO createdBy;
     private List<TaskEventDTO> events;
 
-    public TaskDTO(Long id, String description, int xp, RoomSimpleDTO room, HunterSimpleDTO claimedBy, HunterSimpleDTO createdBy, List<TaskEventDTO> events) {
+    public TaskDTO(Long id, String description, int xp, RoomSimpleDTO room, HunterSimpleDTO claimedBy, HunterSimpleDTO createdBy, List<TaskEventDTO> events, TaskStatusType status) {
         this.id = id;
         this.description = description;
         this.xp = xp;
@@ -19,6 +22,7 @@ public class TaskDTO {
         this.claimedBy = claimedBy;
         this.createdBy = createdBy;
         this.events = events;
+        this.status = status;
     }
 
     public Long getId() {

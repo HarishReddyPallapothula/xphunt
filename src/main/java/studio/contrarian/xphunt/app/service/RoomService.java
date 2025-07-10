@@ -21,9 +21,9 @@ public interface RoomService {
         List<TaskEventDTO> getRoomEvents(Long roomId);
 
 
-        List<HunterRoomSimpleDTO> getRoomLeaderboard(Long roomId);
+        List<HunterRoomSimpleDTO> getRoomLeaderboard(Long roomId, Long hunterId);
 
-        RoomDTO getRoomById(Long roomId);
+        RoomDTO getRoomById(Long roomId, Long hunterId);
         RoomDTO updateRoom(Long roomId, UpdateRoomRequest request, Long userId);
         void leaveRoom(Long roomId, Long userId);
 

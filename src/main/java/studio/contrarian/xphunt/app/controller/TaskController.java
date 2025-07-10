@@ -18,7 +18,8 @@ public class TaskController {
 
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long taskId, @AuthenticationPrincipal CustomUserDetails currentUser) {
-        return ResponseEntity.ok(taskService.getTaskById(taskId));
+        Long hunterId = currentUser.getId();
+        return ResponseEntity.ok(taskService.getTaskById(taskId,hunterId));
     }
 
 

@@ -5,7 +5,7 @@ import java.util.List;
 public class HunterInRoomDTO {
     private Long id;
     private String name;
-    private int xpInRoom; // XP specifically for the room
+    private int xpInRoom;
     private List<TaskSimpleDTO> claimedTasksInRoom;
 
     public HunterInRoomDTO(Long id, String name, int xpInRoom, List<TaskSimpleDTO> claimedTasksInRoom) {

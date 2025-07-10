@@ -13,7 +13,7 @@ public class Task {
     private Long id;
     private String description;
     private int xp;
-    private boolean isCompleted;
+    private TaskStatusType status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
@@ -43,7 +43,7 @@ public class Task {
     private Task(TaskBuilder builder) {
         this.description = builder.description;
         this.xp = builder.xp;
-        this.isCompleted = builder.isCompleted;
+        this.status = builder.status;
         this.room = builder.room;
         this.claimedBy = builder.claimedBy;
         this.createdBy = builder.createdBy;
@@ -61,7 +61,7 @@ public class Task {
     public static class TaskBuilder {
         private String description;
         private int xp;
-        private boolean isCompleted = false; // Default value
+        private TaskStatusType status = TaskStatusType.UNASSIGNED; // Default value
         private Room room;
         private Hunter claimedBy;
         private Hunter createdBy;
@@ -78,8 +78,8 @@ public class Task {
             return this;
         }
 
-        public TaskBuilder isCompleted(boolean isCompleted) {
-            this.isCompleted = isCompleted;
+        public TaskBuilder status(TaskStatusType status) {
+            this.status = status;
             return this;
         }
 
@@ -117,8 +117,14 @@ public class Task {
     public void setDescription(String description) { this.description = description; }
     public int getXp() { return xp; }
     public void setXp(int xp) { this.xp = xp; }
-    public boolean isCompleted() { return isCompleted; }
-    public void setCompleted(boolean completed) { isCompleted = completed; }
+
+    public TaskStatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatusType status) {
+        this.status = status;
+    }
     public Room getRoom() { return room; }
     public void setRoom(Room room) { this.room = room; }
     public Hunter getClaimedBy() { return claimedBy; }
@@ -149,8 +155,11 @@ public class Task {
                 "id=" + id +
                 ", description='" + description + '\'' +
                 ", xp=" + xp +
-                ", isCompleted=" + isCompleted +
-                ", roomId=" + (room != null ? room.getId() : "null") +
+                ", status=" + status +
+                ", room=" + room +
+                ", claimedBy=" + claimedBy +
+                ", createdBy=" + createdBy +
+                ", events=" + events +
                 '}';
     }
 }

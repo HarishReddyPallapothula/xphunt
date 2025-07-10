@@ -51,8 +51,8 @@ public class RoomController {
 
     @GetMapping("/{roomId}/tasks/getAllTasks")
     public ResponseEntity<RoomDTO> getAllTasks(@PathVariable Long roomId, @AuthenticationPrincipal CustomUserDetails currentUser) {
-        Long creatorId = currentUser.getId();
-        RoomDTO task = roomService.getRoomById(roomId);
+        Long hunterId = currentUser.getId();
+        RoomDTO task = roomService.getRoomById(roomId,hunterId);
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
@@ -65,8 +65,9 @@ public class RoomController {
 
 
     @GetMapping("/{roomId}/leaderboard")
-    public ResponseEntity<List<HunterRoomSimpleDTO>> getRoomLeaderboard(@PathVariable Long roomId) {
-        List<HunterRoomSimpleDTO> leaderboard = roomService.getRoomLeaderboard(roomId);
+    public ResponseEntity<List<HunterRoomSimpleDTO>> getRoomLeaderboard(@PathVariable Long roomId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+        Long hunterId = currentUser.getId();
+        List<HunterRoomSimpleDTO> leaderboard = roomService.getRoomLeaderboard(roomId, hunterId);
         return ResponseEntity.ok(leaderboard);
     }
 }

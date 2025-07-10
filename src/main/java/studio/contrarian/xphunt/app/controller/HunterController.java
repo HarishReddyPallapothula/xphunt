@@ -18,14 +18,6 @@ public class HunterController {
         this.hunterService = hunterService;
     }
 
-    // This is a placeholder. In a real app with Spring Security,
-    // you would get the authenticated user's ID from the SecurityContext.
-
-
-    /**
-     * GET /api/hunters/me
-     * Gets the profile of the currently authenticated user, including their rooms and XP.
-     */
     @GetMapping("/me")
     public ResponseEntity<HunterDTO> getMyProfile(@AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();

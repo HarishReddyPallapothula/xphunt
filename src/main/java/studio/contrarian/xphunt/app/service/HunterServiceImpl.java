@@ -12,7 +12,7 @@ import studio.contrarian.xphunt.app.repo.HunterRepository;
 @Service
 
 public class HunterServiceImpl implements HunterService {
-    // ... repository and getHunterDetails ...
+
     HunterRepository hunterRepository;
 
     public HunterServiceImpl(HunterRepository hunterRepository) {

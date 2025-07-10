@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class TaskMapper {
 
     public static TaskSimpleDTO toSimple(Task task) {
-        return new TaskSimpleDTO(task.getId(), task.getDescription(), task.getXp());
+        return new TaskSimpleDTO(task.getId(), task.getDescription(), task.getXp(), task.getStatus());
     }
 
     public static TaskDTO toDTO(Task task) {
@@ -25,7 +25,7 @@ public class TaskMapper {
                         ? task.getEvents().stream()
                         .map(TaskEventMapper::toDTO)
                         .collect(Collectors.toList())
-                        : List.of()
+                        : List.of(),task.getStatus()
         );
     }
 }
