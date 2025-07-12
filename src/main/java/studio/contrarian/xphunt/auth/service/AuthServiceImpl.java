@@ -1,6 +1,8 @@
 package studio.contrarian.xphunt.auth.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,12 +16,14 @@ import studio.contrarian.xphunt.auth.dto.LoginResponse;
 import studio.contrarian.xphunt.auth.dto.RegisterRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import studio.contrarian.xphunt.auth.filter.JwtAuthenticationFilter;
 import studio.contrarian.xphunt.auth.model.CustomUserDetails;
 
 
 @Service
 
 public class AuthServiceImpl implements AuthService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final HunterRepository hunterRepository;
     private final PasswordEncoder passwordEncoder;
@@ -53,7 +57,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest request) {
         // 1. Create an authentication token with the user's raw credentials.
+        logger.info("received request for login : "+ request.getName() + ": "+ request.getPassword());
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+
                 request.getName(),
                 request.getPassword()
         );
