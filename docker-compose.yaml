@@ -5,9 +5,9 @@ services:
     image: postgres:14-alpine
     container_name: xphunt-db
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=xphunt
+      - POSTGRES_USER=${postgres.username}
+      - POSTGRES_PASSWORD=${postgres.password}
+      - POSTGRES_DB=${postgres.dbname}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -22,13 +22,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      -SPRING_DATASOURCE_URL : jdbc:postgresql://db:5432/xphunt
-      -SPRING_DATASOURCE_USERNAME : postgres
-      -SPRING_DATASOURCE_PASSWORD : postgres
+      -SPRING_DATASOURCE_URL : ${spring.datasource.url}
+      -SPRING_DATASOURCE_USERNAME : ${postgres}
+      -SPRING_DATASOURCE_PASSWORD : ${sergtsoP@321}
       -SPRING_JPA_HIBERNATE_DDL_AUTO : update
 
-      -JWT_SECRET : bXktc3VwZXItc2VjcmV0LWtleS1mb3Itand0LXNpZ25pbmctdGhhdC1pcy1sb25nLWVub3VnaA==
-      -JWT_EXPIRATION : 3600000
+      -JWT_SECRET : ${app.jwt.secret}
+      -JWT_EXPIRATION : ${app.jwt.expiration-ms}
     restart: on-failure
 
 volumes:
