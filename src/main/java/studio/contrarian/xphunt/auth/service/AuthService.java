@@ -6,6 +6,6 @@ import studio.contrarian.xphunt.auth.dto.LoginResponse;
 import studio.contrarian.xphunt.auth.dto.RegisterRequest;
 
 public interface AuthService {
-    HunterDTO register(RegisterRequest request);
+    LoginResponse register(RegisterRequest request);
     LoginResponse login(LoginRequest request);
 }

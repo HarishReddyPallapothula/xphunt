@@ -1,4 +1,4 @@
-package studio.contrarian.xphunt.app.exception;
+package studio.contrarian.xphunt.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

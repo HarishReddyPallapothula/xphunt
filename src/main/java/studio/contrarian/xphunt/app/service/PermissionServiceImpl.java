@@ -1,7 +1,7 @@
 package studio.contrarian.xphunt.app.service;
 
 import org.springframework.stereotype.Service;
-import studio.contrarian.xphunt.app.exception.ForbiddenException;
+import studio.contrarian.xphunt.exception.ForbiddenException;
 import studio.contrarian.xphunt.app.repo.HunterRoomRepository;
 import studio.contrarian.xphunt.app.repo.TaskRepository;
 import studio.contrarian.xphunt.app.model.Task;

@@ -18,18 +18,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import studio.contrarian.xphunt.auth.filter.JwtAuthenticationFilter;
 import studio.contrarian.xphunt.auth.model.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
 
 
 @Service
-
 public class AuthServiceImpl implements AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final HunterRepository hunterRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;// Inject the encoder
+    private final JwtTokenProvider tokenProvider;
 
     public AuthServiceImpl(HunterRepository hunterRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         this.hunterRepository = hunterRepository;
@@ -39,48 +38,46 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public HunterDTO register(RegisterRequest request) {
+    public LoginResponse register(RegisterRequest request) { // CHANGED return type
         if (hunterRepository.findByName(request.getName()).isPresent()) {
             throw new IllegalStateException("Hunter with that name already exists.");
         }
 
         Hunter hunter = Hunter.builder()
-            .name(request.getName())
-            .password(passwordEncoder.encode(request.getPassword())) // Hash the password!
-            .totalXp(0)
-            .build();
-        
-        Hunter savedHunter = hunterRepository.save(hunter);
-        return HunterMapper.toDTO(savedHunter);
+                .name(request.getName())
+                .password(passwordEncoder.encode(request.getPassword())) // Hash the password!
+                .totalXp(0)
+                .build();
+
+        hunterRepository.save(hunter);
+
+        // --- NEW LOGIC ---
+        // After successfully registering the user, automatically log them in
+        // by calling our existing login method. This is great for code reuse!
+        logger.info("Hunter '{}' registered successfully. Proceeding to login.", request.getName());
+        LoginRequest loginRequest = new LoginRequest(request.getName(), request.getPassword());
+        return this.login(loginRequest);
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        // 1. Create an authentication token with the user's raw credentials.
-        logger.info("received request for login : "+ request.getName() + ": "+ request.getPassword());
+        logger.info("Authenticating hunter: {}", request.getName());
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-
                 request.getName(),
                 request.getPassword()
         );
 
-        // 2. Use the AuthenticationManager to validate the credentials.
-        //    This is where Spring Security does its magic (calls UserDetailsService, checks password).
         Authentication authentication = authenticationManager.authenticate(authToken);
-
-        // 3. If successful, set the Authentication in the SecurityContext.
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 4. GENERATE THE REAL JWT by calling your token provider.
         String token = tokenProvider.createToken(authentication);
+        logger.info("JWT generated for hunter: {}", request.getName());
 
-        // 5. Get the user details from the authenticated principal object.
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         HunterDTO hunterDTO = hunterRepository.findById(userDetails.getId())
                 .map(HunterMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Logged in user not found with ID: " + userDetails.getId()));
 
-        // 6. Return the response with the REAL token.
         return new LoginResponse(token, hunterDTO);
     }
 }
