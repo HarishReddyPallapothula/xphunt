@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import studio.contrarian.xphunt.auth.filter.JwtAuthenticationFilter;
 import studio.contrarian.xphunt.auth.model.CustomUserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import io.swagger.v3.oas.annotations.Operation;
 
 
@@ -38,7 +40,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse register(RegisterRequest request) { // CHANGED return type
+    @Transactional
+    public LoginResponse register(RegisterRequest request) {
         if (hunterRepository.findByName(request.getName()).isPresent()) {
             throw new IllegalStateException("Hunter with that name already exists.");
         }
@@ -51,15 +54,13 @@ public class AuthServiceImpl implements AuthService {
 
         hunterRepository.save(hunter);
 
-        // --- NEW LOGIC ---
-        // After successfully registering the user, automatically log them in
-        // by calling our existing login method. This is great for code reuse!
         logger.info("Hunter '{}' registered successfully. Proceeding to login.", request.getName());
         LoginRequest loginRequest = new LoginRequest(request.getName(), request.getPassword());
         return this.login(loginRequest);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
         logger.info("Authenticating hunter: {}", request.getName());
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

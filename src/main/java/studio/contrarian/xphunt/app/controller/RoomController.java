@@ -1,5 +1,6 @@
 package studio.contrarian.xphunt.app.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,37 +21,29 @@ public class RoomController {
     private final RoomService roomService;
 
 
-    /**
-     * POST /api/rooms
-     * Create a new room. The creator is automatically added.
-     */
     @PostMapping("/create")
-    public ResponseEntity<RoomDTO> createRoom(@RequestBody CreateRoomRequest request, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<RoomDTO> createRoom(@RequestBody CreateRoomRequest request, @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long creatorId = currentUser.getId();
         RoomDTO createdRoom = roomService.createRoom(request, creatorId);
         return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
     }
 
-    /**
-     * POST /api/rooms/join?inviteCode=...
-     * Join an existing room using an invite code.
-     */
     @PostMapping("/join")
-    public ResponseEntity<RoomDTO> joinRoom(@RequestParam String inviteCode, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<RoomDTO> joinRoom(@RequestParam String inviteCode, @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         RoomDTO joinedRoom = roomService.joinRoom(inviteCode, hunterId);
         return ResponseEntity.ok(joinedRoom);
     }
 
     @PostMapping("/{roomId}/tasks/create")
-    public ResponseEntity<TaskDTO> addTaskToRoom(@PathVariable Long roomId, @RequestBody CreateTaskRequest request, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<TaskDTO> addTaskToRoom(@PathVariable Long roomId, @RequestBody CreateTaskRequest request, @Parameter(hidden = true)@AuthenticationPrincipal CustomUserDetails currentUser) {
         Long creatorId = currentUser.getId();
         TaskDTO newTask = roomService.addTaskToRoom(roomId, request, creatorId);
         return new ResponseEntity<>(newTask, HttpStatus.CREATED);
     }
 
     @GetMapping("/{roomId}/tasks/getAllTasks")
-    public ResponseEntity<RoomDTO> getAllTasks(@PathVariable Long roomId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<RoomDTO> getAllTasks(@PathVariable Long roomId,@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         RoomDTO task = roomService.getRoomById(roomId,hunterId);
         return new ResponseEntity<>(task, HttpStatus.OK);
@@ -65,7 +58,7 @@ public class RoomController {
 
 
     @GetMapping("/{roomId}/leaderboard")
-    public ResponseEntity<List<HunterRoomSimpleDTO>> getRoomLeaderboard(@PathVariable Long roomId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<List<HunterRoomSimpleDTO>> getRoomLeaderboard(@PathVariable Long roomId, @Parameter(hidden = true)@AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         List<HunterRoomSimpleDTO> leaderboard = roomService.getRoomLeaderboard(roomId, hunterId);
         return ResponseEntity.ok(leaderboard);

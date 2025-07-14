@@ -43,9 +43,11 @@ public class SecurityConfig {
 
                 // 2. Set up authorization rules using the new Lambda DSL
                 .authorizeHttpRequests(auth -> auth
-                        // Use requestMatchers instead of antMatchers
                         .requestMatchers("/api/auth/**").permitAll()  // Public endpoints
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // For Swagger/OpenAPI if you use it
+                        .requestMatchers("/swagger-ui.html").permitAll()      // Allow access to the main UI page
+                        .requestMatchers("/swagger-ui/**").permitAll()        // Allow access to UI assets (CSS, JS, etc.)
+                        .requestMatchers("/v3/api-docs/**").permitAll()       // Allow access to the API documentation JSON
+                        .requestMatchers("/swagger-resources/**").permitAll() // Also good to include for some versions
                         .anyRequest().authenticated()                 // All other requests need authentication
                 )
 

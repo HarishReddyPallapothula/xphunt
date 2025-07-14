@@ -18,18 +18,18 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    // A secure key for signing. In a real app, get this from application.properties
+
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration-ms}") // Add this to application.properties
+    @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationInMs;
 
     private Key key;
 
     @PostConstruct
     public void init() {
-        // Decode the Base64 secret from properties to a Key object
+
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
@@ -60,7 +60,7 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Log the error
+
             return false;
         }
     }

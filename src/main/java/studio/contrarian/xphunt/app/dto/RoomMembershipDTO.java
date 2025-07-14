@@ -1,9 +1,6 @@
 package studio.contrarian.xphunt.app.dto;
 
-/**
- * Represents a Hunter's membership in a specific Room.
- * It includes the room's details and the XP the hunter has earned in it.
- */
+
 public class RoomMembershipDTO {
     private Long roomId;
     private String roomName;

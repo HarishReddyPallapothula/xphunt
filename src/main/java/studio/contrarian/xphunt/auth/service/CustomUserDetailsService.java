@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(hunter);
     }
 
-    @Transactional // Good practice for DB calls
+    @Transactional
     public UserDetails loadUserById(Long id) {
         Hunter hunter = hunterRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));

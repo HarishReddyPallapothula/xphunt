@@ -4,7 +4,7 @@ package studio.contrarian.xphunt.auth.dto;
 import studio.contrarian.xphunt.app.dto.HunterDTO;
 
 public class LoginResponse {
-    private String token; // We'll use a placeholder token for now
+    private String token;
     private HunterDTO user;
 
     public LoginResponse(String token, HunterDTO user) {

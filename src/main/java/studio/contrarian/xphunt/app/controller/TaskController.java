@@ -1,5 +1,6 @@
 package studio.contrarian.xphunt.app.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long taskId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long taskId, @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         return ResponseEntity.ok(taskService.getTaskById(taskId,hunterId));
     }
@@ -25,7 +26,7 @@ public class TaskController {
 
     @PostMapping("/{taskId}/claim")
     public ResponseEntity<TaskDTO> claimTask(@PathVariable Long taskId,
-                                             @AuthenticationPrincipal CustomUserDetails currentUser) {
+                                             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         TaskDTO claimedTask = taskService.claimTask(taskId, hunterId);
         return ResponseEntity.ok(claimedTask);
@@ -34,7 +35,7 @@ public class TaskController {
 
     @PostMapping("/{taskId}/complete")
     public ResponseEntity<TaskDTO> completeTask(@PathVariable Long taskId,
-                                                @AuthenticationPrincipal CustomUserDetails currentUser) {
+                                                @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         TaskDTO completedTask = taskService.completeTask(taskId, hunterId);
         return ResponseEntity.ok(completedTask);
@@ -42,7 +43,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId,
-                                           @AuthenticationPrincipal CustomUserDetails currentUser) {
+                                           @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails currentUser) {
         Long hunterId = currentUser.getId();
         taskService.deleteTask(taskId, hunterId);
         return ResponseEntity.noContent().build();
