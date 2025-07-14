@@ -1,8 +1,9 @@
 package studio.contrarian.xphunt.app.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import studio.contrarian.xphunt.app.dto.HunterDTO;
 import studio.contrarian.xphunt.app.dto.UpdateHunterRequest;
 import studio.contrarian.xphunt.app.mappers.HunterMapper;
@@ -20,6 +21,7 @@ public class HunterServiceImpl implements HunterService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HunterDTO getHunterDetails(Long hunterId) {
         Hunter hunter = hunterRepository.findById(hunterId)
                 .orElseThrow(() -> new EntityNotFoundException("Hunter not found with id: " + hunterId));
